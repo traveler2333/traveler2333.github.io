@@ -1,0 +1,115 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const formatDate = (date: Date) => new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(date);
+---
+
+<BaseLayout title="Traveler2333 | Blog">
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">Python · Reinforcement Learning · Notes</p>
+      <h1>把学习过程写成可以回头看的路径。</h1>
+      <p class="lead">
+        这里会记录强化学习、PyTorch、Python 项目实践，以及一些阶段性的心得。少一点噪音，多一点可复用的思考。
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="/blog/">阅读文章</a>
+        <a class="button" href="https://github.com/traveler2333">GitHub</a>
+      </div>
+    </div>
+
+    <aside class="signal-panel" aria-label="站点概览">
+      <div class="signal-top">
+        <span>Current Focus</span>
+        <span>2026</span>
+      </div>
+      <div class="signal-grid">
+        <div class="signal-item">
+          <strong>RL</strong>
+          <span>CartPole、PPO、实验复现</span>
+        </div>
+        <div class="signal-item">
+          <strong>Py</strong>
+          <span>Python 工程化与工具链</span>
+        </div>
+        <div class="signal-item">
+          <strong>DL</strong>
+          <span>PyTorch、模型训练、可视化</span>
+        </div>
+        <div class="signal-item">
+          <strong>Log</strong>
+          <span>把踩坑和心得沉淀下来</span>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="section band">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Latest Writing</p>
+        <h2>最近文章</h2>
+      </div>
+      <a class="button" href="/blog/">全部文章</a>
+    </div>
+
+    {posts.length > 0 ? (
+      <div class="post-grid">
+        {posts.map((post) => (
+          <a class="post-card" href={`/blog/${post.slug}/`}>
+            <div>
+              <span class="post-meta">{formatDate(post.data.date)}</span>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+            </div>
+            <div class="tag-list">
+              {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">文章会出现在这里。</div>
+    )}
+  </section>
+
+  <section class="section band">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Projects</p>
+        <h2>正在推进的项目</h2>
+      </div>
+    </div>
+    <div class="project-grid">
+      <a class="project-card" href="https://github.com/traveler2333">
+        <div>
+          <span class="post-meta">Reinforcement Learning</span>
+          <h3>PPO CartPole 实验</h3>
+          <p>围绕策略优化、训练曲线和可视化对比做一组可复现实验。</p>
+        </div>
+        <div class="tag-list">
+          <span class="tag">PPO</span>
+          <span class="tag">CartPole</span>
+          <span class="tag">PyTorch</span>
+        </div>
+      </a>
+      <a class="project-card" href="/blog/">
+        <div>
+          <span class="post-meta">Personal Knowledge Base</span>
+          <h3>学习笔记系统</h3>
+          <p>把零散学习记录整理成文章，让每次实验都能留下清晰上下文。</p>
+        </div>
+        <div class="tag-list">
+          <span class="tag">Notes</span>
+          <span class="tag">Writing</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</BaseLayout>

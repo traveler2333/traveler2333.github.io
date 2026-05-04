@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (date: Date) => new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(date);
+---
+
+<BaseLayout title="文章 | Traveler2333">
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">Archive</p>
+      <h1>文章</h1>
+      <p class="lead">实验记录、读书笔记、代码心得和阶段性复盘都会放在这里。</p>
+    </div>
+  </section>
+
+  <section class="section band">
+    {posts.length > 0 ? (
+      <div class="post-grid">
+        {posts.map((post) => (
+          <a class="post-card" href={`/blog/${post.slug}/`}>
+            <div>
+              <span class="post-meta">{formatDate(post.data.date)}</span>
+              <h3>{post.data.title}</h3>
+              <p>{post.data.description}</p>
+            </div>
+            <div class="tag-list">
+              {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">还没有发布文章。</div>
+    )}
+  </section>
+</BaseLayout>
