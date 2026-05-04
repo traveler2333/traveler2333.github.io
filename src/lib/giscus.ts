@@ -13,11 +13,9 @@
 
 export const giscus = {
   repo: "traveler2333/traveler2333.github.io",
-  // Replace this with the repo ID from giscus.app:
-  repoId: "",
-  category: "General",
-  // Replace this with the category ID from giscus.app:
-  categoryId: "",
+  repoId: "R_kgDOST7skw",
+  category: "Announcements",
+  categoryId: "DIC_kwDOST7sk84C8USc",
   mapping: "pathname",
   strict: "0",
   reactionsEnabled: "1",
