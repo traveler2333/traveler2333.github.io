@@ -12,7 +12,7 @@ if (!title) {
 const slug = title
   .toLowerCase()
   .normalize("NFKD")
-  .replace(/[^\w\s-]/g, "")
+  .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
   .trim()
   .replace(/\s+/g, "-")
   .replace(/_+/g, "-") || `post-${Date.now()}`;
