@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TagChip from "./TagChip.astro";
+import { entryHref, formatDate, getReadingTime } from "../lib/posts";
+
+interface Props {
+  post: CollectionEntry<"essays">;
+}
+const { post } = Astro.props;
+const { minutes } = getReadingTime(post.body);
+const href = entryHref("essay", post.id);
+---
+
+<a class="post-card essay" href={href} data-section="essays">
+  <div class="post-meta">
+    <span>随笔</span>
+    <span class="dot"></span>
+    <span>{formatDate(post.data.date)}</span>
+    <span class="dot"></span>
+    <span>{minutes} 分钟</span>
+    {post.data.mood && (
+      <>
+        <span class="dot"></span>
+        <span style="font-style:italic">{post.data.mood}</span>
+      </>
+    )}
+  </div>
+  <h3>{post.data.title}</h3>
+  <p class="post-excerpt">{post.data.description}</p>
+  <div class="card-foot">
+    <div class="tag-list">
+      {post.data.tags.slice(0, 3).map((tag) => <TagChip tag={tag} asLink={false} />)}
+    </div>
+    <span class="read-arrow" aria-hidden="true">→</span>
+  </div>
+</a>
+
+<style>
+  .read-arrow {
+    color: var(--accent-strong);
+    font-weight: 700;
+    transition: transform var(--duration-fast) var(--easing);
+  }
+  .post-card:hover .read-arrow {
+    transform: translateX(3px);
+  }
+</style>

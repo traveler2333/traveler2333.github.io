@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import NoteCard from "../../components/NoteCard.astro";
+import TagChip from "../../components/TagChip.astro";
+import { getNotes } from "../../lib/posts";
+import { noteCategoryLabels } from "../../lib/site";
+
+const notes = await getNotes();
+
+const grouped = new Map<string, typeof notes>();
+for (const note of notes) {
+  const list = grouped.get(note.data.category) ?? [];
+  list.push(note);
+  grouped.set(note.data.category, list);
+}
+
+const orderedCategories = ["RL", "Agent", "Python", "DL", "Tooling", "Other"]
+  .filter((c) => grouped.has(c));
+
+const tagCounts = new Map<string, number>();
+for (const post of notes) {
+  for (const tag of post.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+const tags = Array.from(tagCounts.entries())
+  .map(([tag, count]) => ({ tag, count }))
+  .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+---
+
+<BaseLayout
+  title="笔记"
+  description="强化学习、Agent、Python 工程化的实验记录与复盘。"
+  section="notes"
+>
+  <section class="section hero" data-section="notes">
+    <div>
+      <p class="eyebrow">Notes · 笔记</p>
+      <h1 class="hero-display">把<em>实验</em>讲清楚</h1>
+      <p class="lead">
+        每次实验都该留下一条可回溯的路径：为什么这样设计、出了什么问题、调完之后是不是更懂了一点。
+      </p>
+    </div>
+  </section>
+
+  {tags.length > 0 && (
+    <section class="section">
+      <div class="filter-bar" data-section="notes">
+        <span class="label">按标签：</span>
+        {tags.map(({ tag, count }) => (
+          <TagChip tag={tag} count={count} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section band" data-section="notes">
+    {notes.length > 0 ? (
+      orderedCategories.map((category) => (
+        <div style="margin-bottom: var(--space-9);">
+          <div style="display:flex; align-items:baseline; gap: var(--space-3); margin-bottom: var(--space-5);">
+            <h2 style="font-size: 1.6rem; letter-spacing: var(--tracking-tight);">{noteCategoryLabels[category]}</h2>
+            <span style="color: var(--muted); font-size: var(--fs-meta);">{grouped.get(category)?.length} 篇</span>
+          </div>
+          <div class="card-grid">
+            {grouped.get(category)?.map((post) => <NoteCard post={post} />)}
+          </div>
+        </div>
+      ))
+    ) : (
+      <div class="empty-state">还没有笔记，敬请期待。</div>
+    )}
+  </section>
+</BaseLayout>

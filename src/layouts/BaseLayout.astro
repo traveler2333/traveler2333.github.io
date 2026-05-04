@@ -1,59 +1,91 @@
 ---
-import "../styles/global.css";
+import "../styles/index.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SearchPalette from "../components/SearchPalette.astro";
+import { site } from "../lib/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  section?: "essays" | "notes" | undefined;
+  canonical?: string;
+}
 
 const {
-  title = "Traveler2333",
-  description = "记录编程、强化学习、Python 和一些持续发生的思考。"
+  title = site.title,
+  description = site.description,
+  section,
+  canonical
 } = Astro.props;
 
-const nav = [
-  { href: "/", label: "首页" },
-  { href: "/blog/", label: "文章" },
-  { href: "/projects/", label: "项目" },
-  { href: "/about/", label: "关于" }
-];
+const fullTitle =
+  title === site.title ? `${site.title} · ${site.tagline}` : `${title} | ${site.title}`;
 
-const currentPath = Astro.url.pathname;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-section={section}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0e1013" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7f4ed" media="(prefers-color-scheme: light)" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.title} RSS`} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={site.title} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <title>{fullTitle}</title>
+
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem("t2333-theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
+    <a class="skip" href="#main">跳到主内容</a>
     <div class="site-shell">
-      <header class="site-header">
-        <nav class="nav" aria-label="主导航">
-          <a class="brand" href="/">
-            <span class="brand-mark" aria-hidden="true">T</span>
-            <span>Traveler2333</span>
-          </a>
-          <div class="nav-links">
-            {nav.map((item) => (
-              <a
-                href={item.href}
-                aria-current={currentPath === item.href || (item.href !== "/" && currentPath.startsWith(item.href)) ? "page" : undefined}
-              >
-                {item.label}
-              </a>
-            ))}
-          </div>
-        </nav>
-      </header>
-      <main>
+      <Header />
+      <main id="main">
         <slot />
       </main>
-      <footer class="site-footer">
-        <div class="footer-inner">
-          <span>Traveler2333</span>
-          <span>Built with Astro, deployed on GitHub Pages.</span>
-        </div>
-      </footer>
+      <Footer />
     </div>
+    <SearchPalette />
   </body>
 </html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 8px;
+    padding: 8px 12px;
+    background: var(--surface-strong);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--text-strong);
+    z-index: 100;
+  }
+  .skip:focus {
+    left: 8px;
+  }
+</style>

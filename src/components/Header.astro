@@ -1,0 +1,56 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import { site } from "../lib/site";
+
+const currentPath = Astro.url.pathname;
+
+const isActive = (href: string) => {
+  if (href === "/") return currentPath === "/";
+  return currentPath.startsWith(href);
+};
+---
+
+<header class="site-header">
+  <nav class="nav" aria-label="主导航">
+    <a class="brand" href="/">
+      <span class="brand-mark" aria-hidden="true">T</span>
+      <span>{site.title}</span>
+    </a>
+    <div class="nav-links">
+      {site.nav.map((item) => (
+        <a
+          href={item.href}
+          aria-current={isActive(item.href) ? "page" : undefined}
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+    <div class="nav-actions">
+      <button
+        type="button"
+        class="search-trigger"
+        data-search-trigger
+        aria-label="搜索"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <span>搜索</span>
+        <kbd>⌘K</kbd>
+      </button>
+      <ThemeToggle />
+    </div>
+  </nav>
+</header>

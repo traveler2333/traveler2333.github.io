@@ -1,0 +1,114 @@
+/* Theme palette — light + dark + smooth transition. */
+
+:root {
+  color-scheme: light;
+  --bg: #f7f4ed;
+  --bg-elevated: #fffdf6;
+  --surface: #fffdf6;
+  --surface-strong: #ffffff;
+  --surface-sunken: #f1ede4;
+  --line: #e3ddcf;
+  --line-strong: #cdc6b6;
+  --text: #1a1815;
+  --text-strong: #0f0d0a;
+  --muted: #6f6a5e;
+  --muted-strong: #4f4a40;
+  --code-bg: #efeadd;
+  --code-text: #1a1815;
+  --shadow-color: 15, 14, 12;
+  --grain-opacity: 0.04;
+  --hero-blob-1: rgba(201, 122, 74, 0.32);
+  --hero-blob-2: rgba(47, 141, 176, 0.28);
+  --hero-blob-3: rgba(255, 215, 145, 0.35);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e1013;
+  --bg-elevated: #14171b;
+  --surface: #15191e;
+  --surface-strong: #1c2026;
+  --surface-sunken: #0b0d10;
+  --line: #2a2f36;
+  --line-strong: #3a4048;
+  --text: #ebe7df;
+  --text-strong: #fcfaf4;
+  --muted: #99928a;
+  --muted-strong: #b9b3aa;
+  --code-bg: #1a1e23;
+  --code-text: #ebe7df;
+  --shadow-color: 0, 0, 0;
+  --grain-opacity: 0.05;
+  --hero-blob-1: rgba(201, 122, 74, 0.32);
+  --hero-blob-2: rgba(80, 180, 215, 0.28);
+  --hero-blob-3: rgba(120, 90, 200, 0.28);
+
+  --accent-essays: #e8a070;
+  --accent-essays-strong: #f3b888;
+  --accent-essays-soft: rgba(232, 160, 112, 0.18);
+  --accent-notes: #69bcdb;
+  --accent-notes-strong: #8fd2eb;
+  --accent-notes-soft: rgba(105, 188, 219, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0e1013;
+    --bg-elevated: #14171b;
+    --surface: #15191e;
+    --surface-strong: #1c2026;
+    --surface-sunken: #0b0d10;
+    --line: #2a2f36;
+    --line-strong: #3a4048;
+    --text: #ebe7df;
+    --text-strong: #fcfaf4;
+    --muted: #99928a;
+    --muted-strong: #b9b3aa;
+    --code-bg: #1a1e23;
+    --code-text: #ebe7df;
+    --shadow-color: 0, 0, 0;
+    --grain-opacity: 0.05;
+    --hero-blob-1: rgba(201, 122, 74, 0.32);
+    --hero-blob-2: rgba(80, 180, 215, 0.28);
+    --hero-blob-3: rgba(120, 90, 200, 0.28);
+
+    --accent-essays: #e8a070;
+    --accent-essays-strong: #f3b888;
+    --accent-essays-soft: rgba(232, 160, 112, 0.18);
+    --accent-notes: #69bcdb;
+    --accent-notes-strong: #8fd2eb;
+    --accent-notes-soft: rgba(105, 188, 219, 0.18);
+  }
+}
+
+html.theme-transitioning,
+html.theme-transitioning * {
+  transition:
+    background-color var(--duration-base) var(--easing),
+    border-color var(--duration-base) var(--easing),
+    color var(--duration-base) var(--easing),
+    fill var(--duration-base) var(--easing),
+    stroke var(--duration-base) var(--easing) !important;
+}
+
+/* Shiki dual-theme: hide one based on theme */
+html[data-theme="dark"] .astro-code,
+html[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .astro-code,
+  html:not([data-theme="light"]) .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+}

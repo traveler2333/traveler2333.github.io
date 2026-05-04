@@ -1,115 +1,156 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import EssayCard from "../components/EssayCard.astro";
+import NoteCard from "../components/NoteCard.astro";
+import {
+  getEssays,
+  getNotes,
+  getAllPosts,
+  collectTags,
+  tagHref,
+  seriesHref,
+  getSeries
+} from "../lib/posts";
+import { site } from "../lib/site";
 
-const posts = (await getCollection("blog"))
-  .filter((post) => !post.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
+const essays = (await getEssays()).slice(0, 3);
+const notes = (await getNotes()).slice(0, 3);
+const all = await getAllPosts();
+const tags = collectTags(all).slice(0, 18);
+const series = Array.from(getSeries(all).entries()).slice(0, 4);
 
-const formatDate = (date: Date) => new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(date);
+const totals = {
+  essays: (await getEssays()).length,
+  notes: (await getNotes()).length,
+  tags: collectTags(all).length,
+  series: getSeries(all).size
+};
 ---
 
-<BaseLayout title="Traveler2333 | Blog">
+<BaseLayout>
   <section class="section hero">
     <div>
-      <p class="eyebrow">Python · Reinforcement Learning · Notes</p>
-      <h1>把学习过程写成可以回头看的路径。</h1>
+      <p class="eyebrow">Essays · Notes · Drafts in motion</p>
+      <h1 class="hero-display">把<em>学习</em>和<em>思考</em><br />都留下痕迹。</h1>
       <p class="lead">
-        这里会记录强化学习、PyTorch、Python 项目实践，以及一些阶段性的心得。少一点噪音，多一点可复用的思考。
+        这里有两条线：<strong>随笔</strong>是关于人生意义、内卷、阅读、生活方式的零散思考；<strong>笔记</strong>是关于强化学习、Agent、Python 工程化的实验记录。少一点结论，多一点上下文。
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="/blog/">阅读文章</a>
-        <a class="button" href="https://github.com/traveler2333">GitHub</a>
+        <a class="button primary" href="/essays/">
+          阅读随笔
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="button" href="/notes/">查看笔记</a>
+        <a class="button ghost" href={site.author.github} rel="noopener">GitHub</a>
       </div>
     </div>
 
     <aside class="signal-panel" aria-label="站点概览">
       <div class="signal-top">
-        <span>Current Focus</span>
-        <span>2026</span>
+        <span><strong>Now</strong> · 2026 spring</span>
+        <span>v0.2 · redesign</span>
       </div>
       <div class="signal-grid">
         <div class="signal-item">
-          <strong>RL</strong>
-          <span>CartPole、PPO、实验复现</span>
+          <strong>{totals.essays}</strong>
+          <span>篇随笔</span>
         </div>
         <div class="signal-item">
-          <strong>Py</strong>
-          <span>Python 工程化与工具链</span>
+          <strong>{totals.notes}</strong>
+          <span>篇笔记</span>
         </div>
         <div class="signal-item">
-          <strong>DL</strong>
-          <span>PyTorch、模型训练、可视化</span>
+          <strong>{totals.series}</strong>
+          <span>个系列</span>
         </div>
         <div class="signal-item">
-          <strong>Log</strong>
-          <span>把踩坑和心得沉淀下来</span>
+          <strong>{totals.tags}</strong>
+          <span>个标签</span>
         </div>
       </div>
     </aside>
   </section>
 
-  <section class="section band">
+  <section class="section band" data-section="essays">
     <div class="section-head">
       <div>
-        <p class="eyebrow">Latest Writing</p>
-        <h2>最近文章</h2>
+        <p class="eyebrow">Essays · 随笔</p>
+        <h2>最近写的</h2>
       </div>
-      <a class="button" href="/blog/">全部文章</a>
+      <a class="button ghost" href="/essays/">全部随笔 →</a>
     </div>
+    {essays.length > 0 ? (
+      <div class="card-grid">
+        {essays.map((post) => <EssayCard post={post} />)}
+      </div>
+    ) : (
+      <div class="empty-state">还没有随笔，敬请期待。</div>
+    )}
+  </section>
 
-    {posts.length > 0 ? (
-      <div class="post-grid">
-        {posts.map((post) => (
-          <a class="post-card" href={`/blog/${post.slug}/`}>
-            <div>
-              <span class="post-meta">{formatDate(post.data.date)}</span>
-              <h3>{post.data.title}</h3>
-              <p>{post.data.description}</p>
+  <section class="section band" data-section="notes">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Notes · 笔记</p>
+        <h2>最近学的</h2>
+      </div>
+      <a class="button ghost" href="/notes/">全部笔记 →</a>
+    </div>
+    {notes.length > 0 ? (
+      <div class="card-grid">
+        {notes.map((post) => <NoteCard post={post} />)}
+      </div>
+    ) : (
+      <div class="empty-state">还没有笔记，敬请期待。</div>
+    )}
+  </section>
+
+  {series.length > 0 && (
+    <section class="section band">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Series · 系列</p>
+          <h2>正在推进</h2>
+        </div>
+        <a class="button ghost" href="/series/">全部系列 →</a>
+      </div>
+      <div class="card-grid">
+        {series.map(([name, posts]) => (
+          <a class="post-card" href={seriesHref(name)}>
+            <div class="post-meta">
+              <span>系列</span>
+              <span class="dot"></span>
+              <span>{posts.length} 篇</span>
             </div>
-            <div class="tag-list">
-              {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+            <h3>{name}</h3>
+            <p class="post-excerpt">
+              {posts[0]?.data.description}
+            </p>
+            <div class="card-foot">
+              <span style="color:var(--accent-strong); font-weight:700;">查看系列 →</span>
             </div>
           </a>
         ))}
       </div>
-    ) : (
-      <div class="empty-state">文章会出现在这里。</div>
-    )}
-  </section>
+    </section>
+  )}
 
-  <section class="section band">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Projects</p>
-        <h2>正在推进的项目</h2>
+  {tags.length > 0 && (
+    <section class="section band">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Tags · 标签</p>
+          <h2>常聊到的</h2>
+        </div>
       </div>
-    </div>
-    <div class="project-grid">
-      <a class="project-card" href="https://github.com/traveler2333">
-        <div>
-          <span class="post-meta">Reinforcement Learning</span>
-          <h3>PPO CartPole 实验</h3>
-          <p>围绕策略优化、训练曲线和可视化对比做一组可复现实验。</p>
-        </div>
-        <div class="tag-list">
-          <span class="tag">PPO</span>
-          <span class="tag">CartPole</span>
-          <span class="tag">PyTorch</span>
-        </div>
-      </a>
-      <a class="project-card" href="/blog/">
-        <div>
-          <span class="post-meta">Personal Knowledge Base</span>
-          <h3>学习笔记系统</h3>
-          <p>把零散学习记录整理成文章，让每次实验都能留下清晰上下文。</p>
-        </div>
-        <div class="tag-list">
-          <span class="tag">Notes</span>
-          <span class="tag">Writing</span>
-        </div>
-      </a>
-    </div>
-  </section>
+      <div class="tag-cloud">
+        {tags.map(({ tag, count }) => (
+          <a href={tagHref(tag)} style={`--w:${Math.min(count * 2, 10)}`}>
+            #{tag}
+            <span style="opacity:.5; margin-left:4px;">{count}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>

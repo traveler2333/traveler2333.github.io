@@ -1,0 +1,19 @@
+---
+import { tagHref } from "../lib/posts";
+interface Props {
+  tag: string;
+  count?: number;
+  active?: boolean;
+  asLink?: boolean;
+}
+const { tag, count, active = false, asLink = true } = Astro.props;
+const Tag = asLink ? "a" : "span";
+---
+
+<Tag
+  class:list={["chip", { "is-active": active }]}
+  {...asLink ? { href: tagHref(tag) } : {}}
+>
+  <span>#{tag}</span>
+  {count !== undefined && <span style="opacity:.6">{count}</span>}
+</Tag>

@@ -1,0 +1,32 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts, collectTags, tagHref } from "../../lib/posts";
+
+const all = await getAllPosts();
+const tags = collectTags(all);
+---
+
+<BaseLayout title="标签" description="所有标签。">
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">Tags</p>
+      <h1 class="hero-display">所有<em>标签</em></h1>
+      <p class="lead">点开任意一个标签，可以同时看到对应的随笔和笔记。</p>
+    </div>
+  </section>
+
+  <section class="section band">
+    {tags.length > 0 ? (
+      <div class="tag-cloud">
+        {tags.map(({ tag, count }) => (
+          <a href={tagHref(tag)} style={`--w:${Math.min(count * 2, 10)}`}>
+            #{tag}
+            <span style="opacity:.5; margin-left:4px;">{count}</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">还没有标签。</div>
+    )}
+  </section>
+</BaseLayout>

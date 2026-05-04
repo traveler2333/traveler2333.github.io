@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EssayCard from "../../components/EssayCard.astro";
+import NoteCard from "../../components/NoteCard.astro";
+import { getAllPosts, getSeries } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const all = await getAllPosts();
+  const map = getSeries(all);
+  return Array.from(map.entries()).map(([name, posts]) => ({
+    params: { name },
+    props: { name, posts }
+  }));
+}
+
+const { name, posts } = Astro.props;
+const description = posts[0]?.data.description ?? `${name} 系列的文章合集。`;
+---
+
+<BaseLayout title={`系列：${name}`} description={description}>
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">Series · {posts.length} 篇</p>
+      <h1 class="hero-display">{name}</h1>
+      <p class="lead">{description}</p>
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="card-grid">
+      {posts.map((post) =>
+        post.kind === "essay" ? (
+          <EssayCard post={post} />
+        ) : (
+          <NoteCard post={post} />
+        )
+      )}
+    </div>
+  </section>
+</BaseLayout>

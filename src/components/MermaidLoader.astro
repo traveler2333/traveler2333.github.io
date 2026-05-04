@@ -1,0 +1,78 @@
+---
+// Renders Mermaid diagrams. Looks for fenced code blocks with `language-mermaid`
+// (the default Astro markdown output for ```mermaid```), wraps them in
+// `<div class="mermaid">` and asks mermaid.js to render.
+---
+
+<script>
+  const detectTheme = (): "light" | "dark" => {
+    const html = document.documentElement;
+    const explicit = html.getAttribute("data-theme");
+    if (explicit === "light" || explicit === "dark") return explicit;
+    return window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+
+  const ensureBlocks = (): HTMLElement[] => {
+    const codes = Array.from(
+      document.querySelectorAll<HTMLElement>("pre > code.language-mermaid")
+    );
+    const hosts: HTMLElement[] = [];
+    codes.forEach((code) => {
+      const pre = code.parentElement;
+      if (!pre) return;
+      const host = document.createElement("div");
+      host.className = "mermaid";
+      host.dataset.mermaidSource = code.textContent ?? "";
+      pre.replaceWith(host);
+      hosts.push(host);
+    });
+    document
+      .querySelectorAll<HTMLElement>(".mermaid[data-mermaid-source]")
+      .forEach((host) => {
+        if (!hosts.includes(host)) hosts.push(host);
+      });
+    return hosts;
+  };
+
+  let mermaidPromise: Promise<typeof import("mermaid")["default"]> | null = null;
+  const loadMermaid = () => {
+    if (!mermaidPromise) {
+      mermaidPromise = import("mermaid").then((m) => m.default);
+    }
+    return mermaidPromise;
+  };
+
+  const render = async () => {
+    const blocks = ensureBlocks();
+    if (blocks.length === 0) return;
+    const mermaid = await loadMermaid();
+    const theme = detectTheme() === "dark" ? "dark" : "default";
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "strict",
+      theme,
+      fontFamily:
+        "Inter Variable, Noto Sans SC, ui-sans-serif, system-ui, sans-serif"
+    });
+    for (const [i, host] of blocks.entries()) {
+      const source = host.dataset.mermaidSource ?? "";
+      try {
+        const id = `mmd-${i}-${Math.floor(Math.random() * 1e6)}`;
+        const { svg } = await mermaid.render(id, source);
+        host.innerHTML = svg;
+      } catch (err) {
+        host.innerHTML = `<pre style="color:#c0392b; white-space:pre-wrap;">Mermaid render error: ${
+          (err as Error).message
+        }</pre>`;
+      }
+    }
+  };
+
+  render();
+  window.addEventListener("themechange", () => {
+    void render();
+  });
+</script>

@@ -1,0 +1,63 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+const { headings } = Astro.props;
+
+// Use h2 + h3 only — anything deeper clutters the TOC.
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{items.length > 0 && (
+  <nav class="toc" aria-label="目录">
+    <p class="toc-title">目录</p>
+    <ul>
+      {items.map((h) => (
+        <li>
+          <a href={`#${h.slug}`} data-toc-link data-depth={h.depth}>
+            {h.text}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>("[data-toc-link]")
+  );
+  if (links.length > 0) {
+    const headings = links
+      .map((link) => {
+        const id = decodeURIComponent(link.getAttribute("href")?.slice(1) ?? "");
+        return document.getElementById(id);
+      })
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    const setActive = (id: string) => {
+      links.forEach((link) =>
+        link.classList.toggle(
+          "is-active",
+          decodeURIComponent(link.getAttribute("href")?.slice(1) ?? "") === id
+        )
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top);
+        if (visible[0]) {
+          setActive(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 1] }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+  }
+</script>

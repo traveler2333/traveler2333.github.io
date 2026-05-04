@@ -1,0 +1,108 @@
+---
+import { giscus, giscusEnabled } from "../lib/giscus";
+
+const enabled = giscusEnabled();
+---
+
+<section class="comments-block" aria-label="评论">
+  <h3>留言区</h3>
+  <p class="lead">用 GitHub 账号登录即可评论，反应（点赞 / 想法）也会同步到这条 Discussion。</p>
+
+  {enabled ? (
+    <div
+      class="giscus"
+      data-giscus
+      data-repo={giscus.repo}
+      data-repo-id={giscus.repoId}
+      data-category={giscus.category}
+      data-category-id={giscus.categoryId}
+      data-mapping={giscus.mapping}
+      data-strict={giscus.strict}
+      data-reactions-enabled={giscus.reactionsEnabled}
+      data-emit-metadata={giscus.emitMetadata}
+      data-input-position={giscus.inputPosition}
+      data-lang={giscus.lang}
+      data-loading={giscus.loading}
+    ></div>
+  ) : (
+    <div class="comments-placeholder">
+      <p>
+        <strong>评论暂未启用。</strong>
+        要开启评论，请先在 GitHub 仓库的 Settings → General 启用 Discussions，
+        然后访问 <a href="https://giscus.app" target="_blank" rel="noopener">giscus.app</a> 生成 <code>repoId</code> 和
+        <code>categoryId</code>，把它们填到 <code>src/lib/giscus.ts</code> 中。
+      </p>
+    </div>
+  )}
+</section>
+
+{enabled && (
+  <script>
+    type Mode = "light" | "dark" | "system";
+    const KEY = "t2333-theme";
+
+    const detectTheme = (): "light" | "dark" => {
+      try {
+        const stored = localStorage.getItem(KEY) as Mode | null;
+        if (stored === "light" || stored === "dark") return stored;
+      } catch {}
+      return window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    };
+
+    const giscusTheme = (): string =>
+      detectTheme() === "dark" ? "dark_dimmed" : "light";
+
+    const mount = () => {
+      const host = document.querySelector<HTMLElement>("[data-giscus]");
+      if (!host) return;
+      // Avoid double-mounting if the script runs twice (e.g. ViewTransitions).
+      if (host.querySelector("iframe")) return;
+      const s = document.createElement("script");
+      s.src = "https://giscus.app/client.js";
+      s.async = true;
+      s.crossOrigin = "anonymous";
+      s.dataset.repo = host.dataset.repo!;
+      s.dataset.repoId = host.dataset.repoId!;
+      s.dataset.category = host.dataset.category!;
+      s.dataset.categoryId = host.dataset.categoryId!;
+      s.dataset.mapping = host.dataset.mapping!;
+      s.dataset.strict = host.dataset.strict!;
+      s.dataset.reactionsEnabled = host.dataset.reactionsEnabled!;
+      s.dataset.emitMetadata = host.dataset.emitMetadata!;
+      s.dataset.inputPosition = host.dataset.inputPosition!;
+      s.dataset.theme = giscusTheme();
+      s.dataset.lang = host.dataset.lang!;
+      s.dataset.loading = host.dataset.loading!;
+      host.appendChild(s);
+    };
+
+    mount();
+
+    const sendTheme = (theme: string) => {
+      const frame = document.querySelector<HTMLIFrameElement>("iframe.giscus-frame");
+      frame?.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme } } },
+        "https://giscus.app"
+      );
+    };
+
+    window.addEventListener("themechange", () => sendTheme(giscusTheme()));
+    if (window.matchMedia) {
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", () => {
+          const stored = (() => {
+            try {
+              return localStorage.getItem(KEY);
+            } catch {
+              return null;
+            }
+          })();
+          if (!stored || stored === "system") sendTheme(giscusTheme());
+        });
+    }
+  </script>
+)}

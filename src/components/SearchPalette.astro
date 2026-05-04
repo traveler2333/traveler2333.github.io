@@ -1,0 +1,102 @@
+---
+// ⌘K modal that loads Pagefind's UI on demand. We import the prebuilt
+// pagefind asset which is generated into /pagefind/ during the build.
+---
+
+<div class="search-modal" data-search-modal aria-hidden="true" role="dialog" aria-modal="true" aria-label="搜索">
+  <div class="search-modal-card">
+    <div data-search-mount></div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+
+<script>
+  declare global {
+    interface Window {
+      __pagefindLoaded?: boolean;
+    }
+  }
+
+  const open = () => {
+    const modal = document.querySelector<HTMLElement>("[data-search-modal]");
+    if (!modal) return;
+    modal.dataset.open = "true";
+    modal.setAttribute("aria-hidden", "false");
+    if (!window.__pagefindLoaded) {
+      window.__pagefindLoaded = true;
+      const s = document.createElement("script");
+      s.src = "/pagefind/pagefind-ui.js";
+      s.onload = () => {
+        // @ts-ignore — global injected by pagefind-ui.js
+        new window.PagefindUI({
+          element: "[data-search-mount]",
+          showSubResults: true,
+          showImages: false,
+          resetStyles: false,
+          translations: {
+            placeholder: "搜索文章…",
+            clear_search: "清除",
+            load_more: "加载更多",
+            search_label: "搜索",
+            filters_label: "过滤",
+            zero_results: "没有找到 [SEARCH_TERM] 的结果",
+            many_results: "[COUNT] 条结果，搜索：[SEARCH_TERM]",
+            one_result: "1 条结果，搜索：[SEARCH_TERM]",
+            alt_search: "[SEARCH_TERM] 没有结果，显示 [DISPLAY_QUERY] 的结果",
+            search_suggestion: "[SEARCH_TERM] 没有结果，试试这些：",
+            searching: "正在搜索 [SEARCH_TERM]…"
+          }
+        });
+      };
+      s.onerror = () => {
+        const mount = document.querySelector<HTMLElement>("[data-search-mount]");
+        if (mount) {
+          mount.innerHTML =
+            '<p style="padding:24px; color:var(--muted)">搜索索引尚未构建。运行 <code>npm run build</code> 后再试。</p>';
+        }
+      };
+      document.body.appendChild(s);
+    }
+    window.requestAnimationFrame(() => {
+      const input = modal.querySelector<HTMLInputElement>("input[type='text']");
+      input?.focus();
+    });
+  };
+
+  const close = () => {
+    const modal = document.querySelector<HTMLElement>("[data-search-modal]");
+    if (!modal) return;
+    delete modal.dataset.open;
+    modal.setAttribute("aria-hidden", "true");
+  };
+
+  document.addEventListener("click", (event) => {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("[data-search-trigger]")) {
+      event.preventDefault();
+      open();
+      return;
+    }
+    if (target === document.querySelector("[data-search-modal]")) {
+      close();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      open();
+      return;
+    }
+    if (event.key === "Escape") {
+      close();
+    }
+    if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      const tag = (event.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      event.preventDefault();
+      open();
+    }
+  });
+</script>

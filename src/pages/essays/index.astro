@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EssayCard from "../../components/EssayCard.astro";
+import TagChip from "../../components/TagChip.astro";
+import { getEssays, groupByYear } from "../../lib/posts";
+
+const essays = await getEssays();
+const groups = groupByYear(essays);
+
+const tagCounts = new Map<string, number>();
+for (const post of essays) {
+  for (const tag of post.data.tags) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+const tags = Array.from(tagCounts.entries())
+  .map(([tag, count]) => ({ tag, count }))
+  .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+---
+
+<BaseLayout
+  title="随笔"
+  description="人生意义、内卷、阅读、生活方式——那些反复出现却没被认真写下来的想法。"
+  section="essays"
+>
+  <section class="section hero" data-section="essays">
+    <div>
+      <p class="eyebrow">Essays · 随笔</p>
+      <h1 class="hero-display"><em>慢一点的</em>想法</h1>
+      <p class="lead">
+        和写代码不同，写随笔是为了把没成型的想法暂存下来。它们也许会被推翻，
+        但至少先存在过。
+      </p>
+    </div>
+  </section>
+
+  {tags.length > 0 && (
+    <section class="section">
+      <div class="filter-bar" data-section="essays">
+        <span class="label">按标签：</span>
+        {tags.map(({ tag, count }) => (
+          <TagChip tag={tag} count={count} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="section band" data-section="essays">
+    {essays.length > 0 ? (
+      groups.map(([year, posts]) => (
+        <div style="margin-bottom: var(--space-9);">
+          <h2 style="font-family: var(--font-serif); font-style: italic; font-size: 2rem; color: var(--muted-strong); margin-bottom: var(--space-5);">{year}</h2>
+          <div class="card-grid">
+            {posts.map((post) => <EssayCard post={post} />)}
+          </div>
+        </div>
+      ))
+    ) : (
+      <div class="empty-state">还没有随笔，敬请期待。</div>
+    )}
+  </section>
+</BaseLayout>

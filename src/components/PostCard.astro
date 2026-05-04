@@ -1,0 +1,16 @@
+---
+import EssayCard from "./EssayCard.astro";
+import NoteCard from "./NoteCard.astro";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post:
+    | (CollectionEntry<"essays"> & { kind: "essay" })
+    | (CollectionEntry<"notes"> & { kind: "note" });
+}
+const { post } = Astro.props;
+---
+
+{post.kind === "essay"
+  ? <EssayCard post={post as CollectionEntry<"essays">} />
+  : <NoteCard post={post as CollectionEntry<"notes">} />}

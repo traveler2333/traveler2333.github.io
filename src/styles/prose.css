@@ -1,0 +1,269 @@
+/* Long-form prose: typography, code blocks, KaTeX, callouts, drop cap. */
+
+.prose {
+  font-size: 1.06rem;
+  line-height: var(--lh-loose);
+  color: color-mix(in srgb, var(--text), var(--muted) 12%);
+  max-width: var(--max-prose);
+}
+
+.prose > * {
+  margin-block: 0;
+}
+
+.prose > * + * {
+  margin-top: 1.4em;
+}
+
+.prose p {
+  font-feature-settings: "calt" 1, "kern" 1;
+}
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--text-strong);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: var(--tracking-tight);
+  scroll-margin-top: 92px;
+}
+
+.prose h2 {
+  margin-top: 2.6em;
+  margin-bottom: 0.4em;
+  font-size: 1.85rem;
+  font-style: italic;
+}
+
+.prose h3 {
+  margin-top: 2em;
+  margin-bottom: 0.3em;
+  font-size: 1.3rem;
+}
+
+.prose h4 {
+  margin-top: 1.6em;
+  font-size: 1.08rem;
+  font-style: italic;
+}
+
+[data-section="notes"] .prose h2,
+[data-section="notes"] .prose h3,
+[data-section="notes"] .prose h4 {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.prose a {
+  color: var(--accent-strong);
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  padding-bottom: 1px;
+  transition: background-size var(--duration-fast) var(--easing);
+}
+
+.prose a:hover {
+  background-size: 100% 2px;
+}
+
+.prose strong {
+  color: var(--text-strong);
+}
+
+.prose em {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.prose blockquote {
+  margin-block: 1.6em;
+  padding: 0.6em 1.4em;
+  border-left: 3px solid var(--accent);
+  color: var(--muted-strong);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.08rem;
+}
+
+.prose blockquote p {
+  margin: 0;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5em;
+}
+
+.prose li + li {
+  margin-top: 0.4em;
+}
+
+.prose li::marker {
+  color: var(--accent);
+}
+
+.prose hr {
+  margin: 2.4em 0;
+  border-top: 1px solid var(--line);
+}
+
+.prose img {
+  margin-block: 1.6em;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+}
+
+/* Drop cap on essays */
+[data-section="essays"] .prose > p:first-of-type::first-letter {
+  initial-letter: 2.6;
+  -webkit-initial-letter: 2.6;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-style: italic;
+  margin-right: 0.12em;
+  color: var(--accent-strong);
+}
+
+/* Inline code */
+.prose :not(pre) > code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--code-bg);
+  color: var(--code-text);
+  border: 1px solid color-mix(in srgb, var(--line), transparent 50%);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+/* Block code */
+.prose pre {
+  margin-block: 1.8em;
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--code-bg);
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  position: relative;
+  box-shadow: var(--shadow-xs);
+}
+
+.prose pre code {
+  font-family: var(--font-mono);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+
+.prose .astro-code {
+  background: var(--code-bg) !important;
+}
+
+/* Tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: 1.8em;
+  font-size: 0.95rem;
+}
+
+.prose th,
+.prose td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.prose th {
+  font-weight: 700;
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--surface-sunken), transparent 20%);
+}
+
+.prose tr:hover td {
+  background: color-mix(in srgb, var(--accent-soft), transparent 60%);
+}
+
+/* KaTeX */
+.prose .katex-display {
+  margin: 1.6em 0;
+  padding: 0.6em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.prose .katex {
+  font-size: 1.05em;
+}
+
+/* Callouts (custom blocks) */
+.callout {
+  margin-block: 1.8em;
+  padding: var(--space-5) var(--space-6);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent-soft), var(--surface) 25%);
+  color: var(--text);
+}
+
+.callout > * + * {
+  margin-top: 0.6em;
+}
+
+.callout .callout-title {
+  margin-bottom: 0.4em;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.callout.warning {
+  --accent: #c97a4a;
+  --accent-strong: #a55c30;
+  --accent-soft: rgba(201, 122, 74, 0.16);
+}
+
+.callout.info {
+  --accent: var(--accent-notes);
+  --accent-strong: var(--accent-notes-strong);
+  --accent-soft: var(--accent-notes-soft);
+}
+
+.callout.quote {
+  --accent: #8a5cf5;
+  --accent-strong: #6b3de0;
+  --accent-soft: rgba(138, 92, 245, 0.14);
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+/* Mermaid */
+.mermaid {
+  margin-block: 1.8em;
+  padding: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  text-align: center;
+  overflow-x: auto;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}

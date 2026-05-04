@@ -1,0 +1,103 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import TOC from "../components/TOC.astro";
+import ReadingProgress from "../components/ReadingProgress.astro";
+import SeriesNav from "../components/SeriesNav.astro";
+import Comments from "../components/Comments.astro";
+import TagChip from "../components/TagChip.astro";
+import CategoryBadge from "../components/CategoryBadge.astro";
+import MermaidLoader from "../components/MermaidLoader.astro";
+import {
+  formatDate,
+  getReadingTime,
+  getAllPosts,
+  getSeriesNeighbors,
+  type AnyPost
+} from "../lib/posts";
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  kind: "essay" | "note";
+  data: {
+    title: string;
+    description: string;
+    date: Date;
+    updated?: Date;
+    tags: string[];
+    series?: string;
+    seriesOrder?: number;
+    mood?: string;
+    category?: string;
+  };
+  body: string | undefined;
+  id: string;
+  headings: MarkdownHeading[];
+}
+
+const { kind, data, body, id, headings } = Astro.props;
+const section = kind === "essay" ? "essays" : "notes";
+const reading = getReadingTime(body);
+
+const all = await getAllPosts();
+const { prev, next } = getSeriesNeighbors(all, {
+  kind,
+  id,
+  series: data.series
+});
+---
+
+<BaseLayout title={data.title} description={data.description} section={section}>
+  <ReadingProgress />
+  <div class="article-shell" data-section={section}>
+    <article>
+      <header class="article-head">
+        <p class="eyebrow">
+          {kind === "essay" ? "随笔" : "笔记"}
+          {data.category && kind === "note" && <>· <CategoryBadge category={data.category} /></>}
+        </p>
+        <h1>{data.title}</h1>
+        <p class="lead">{data.description}</p>
+        <div class="article-meta">
+          <span>{formatDate(data.date, "long")}</span>
+          {data.updated && (
+            <>
+              <span class="dot"></span>
+              <span>更新于 {formatDate(data.updated, "long")}</span>
+            </>
+          )}
+          <span class="dot"></span>
+          <span>{reading.text}</span>
+          {data.mood && (
+            <>
+              <span class="dot"></span>
+              <span style="font-style:italic">{data.mood}</span>
+            </>
+          )}
+          {data.series && (
+            <>
+              <span class="dot"></span>
+              <span>系列：<a href={`/series/${encodeURIComponent(data.series)}/`}>{data.series}</a></span>
+            </>
+          )}
+        </div>
+        {data.tags.length > 0 && (
+          <div class="tag-list" style="margin-top: var(--space-5);">
+            {data.tags.map((tag) => <TagChip tag={tag} />)}
+          </div>
+        )}
+      </header>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      {data.series && <SeriesNav series={data.series} prev={prev as AnyPost | undefined} next={next as AnyPost | undefined} />}
+
+      <Comments />
+    </article>
+
+    <TOC headings={headings} />
+  </div>
+
+  <MermaidLoader />
+</BaseLayout>

@@ -1,0 +1,11 @@
+---
+import { noteCategoryLabels } from "../lib/site";
+
+interface Props {
+  category: string;
+}
+const { category } = Astro.props;
+const label = noteCategoryLabels[category] ?? category;
+---
+
+<span class="category-badge">{label}</span>

@@ -1,0 +1,42 @@
+---
+import type { AnyPost } from "../lib/posts";
+import { postHref, seriesHref } from "../lib/posts";
+
+interface Props {
+  series: string;
+  prev?: AnyPost;
+  next?: AnyPost;
+}
+const { series, prev, next } = Astro.props;
+---
+
+<aside class="series-nav" aria-label={`系列：${series}`}>
+  <div class="prev">
+    <span class="label">系列 · {series}</span>
+    {prev ? (
+      <a href={postHref(prev)}>
+        <span style="color:var(--muted); font-size:.86rem;">← 上一篇</span>
+        <strong>{prev.data.title}</strong>
+      </a>
+    ) : (
+      <a href={seriesHref(series)}>
+        <span style="color:var(--muted); font-size:.86rem;">← 系列首页</span>
+        <strong>查看本系列全部文章</strong>
+      </a>
+    )}
+  </div>
+  <div class="next">
+    <span class="label">&nbsp;</span>
+    {next ? (
+      <a href={postHref(next)}>
+        <span style="color:var(--muted); font-size:.86rem;">下一篇 →</span>
+        <strong>{next.data.title}</strong>
+      </a>
+    ) : (
+      <a href={seriesHref(series)}>
+        <span style="color:var(--muted); font-size:.86rem;">系列首页 →</span>
+        <strong>查看本系列全部文章</strong>
+      </a>
+    )}
+  </div>
+</aside>

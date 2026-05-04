@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="搜索" description="搜索整站所有随笔与笔记。">
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">Search</p>
+      <h1 class="hero-display"><em>找一下</em></h1>
+      <p class="lead">
+        全站的随笔和笔记都已经被索引。也可以从任何页面按
+        <kbd>⌘ K</kbd> / <kbd>Ctrl K</kbd> 唤出快捷搜索面板。
+      </p>
+    </div>
+  </section>
+
+  <section class="section band">
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <div class="search-page" data-pagefind-page></div>
+  </section>
+</BaseLayout>
+
+<script>
+  const mount = () => {
+    const el = document.querySelector<HTMLElement>("[data-pagefind-page]");
+    if (!el) return;
+    const s = document.createElement("script");
+    s.src = "/pagefind/pagefind-ui.js";
+    s.onload = () => {
+      // @ts-ignore — global injected by pagefind-ui.js
+      new window.PagefindUI({
+        element: "[data-pagefind-page]",
+        showSubResults: true,
+        showImages: false,
+        resetStyles: false,
+        translations: {
+          placeholder: "搜索文章…",
+          clear_search: "清除",
+          load_more: "加载更多",
+          search_label: "搜索",
+          filters_label: "过滤",
+          zero_results: "没有找到 [SEARCH_TERM] 的结果",
+          many_results: "[COUNT] 条结果，搜索：[SEARCH_TERM]",
+          one_result: "1 条结果，搜索：[SEARCH_TERM]",
+          alt_search: "[SEARCH_TERM] 没有结果，显示 [DISPLAY_QUERY] 的结果",
+          search_suggestion: "[SEARCH_TERM] 没有结果，试试这些：",
+          searching: "正在搜索 [SEARCH_TERM]…"
+        }
+      });
+    };
+    s.onerror = () => {
+      el.innerHTML =
+        '<p class="empty-state">搜索索引尚未构建。运行 <code>npm run build</code> 后再试。</p>';
+    };
+    document.body.appendChild(s);
+  };
+  mount();
+</script>
+
+<style>
+  .search-page {
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--text);
+    --pagefind-ui-background: var(--surface);
+    --pagefind-ui-border: var(--line);
+    --pagefind-ui-tag: var(--surface-sunken);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: var(--radius-md);
+    --pagefind-ui-font: var(--font-sans);
+  }
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    background: var(--surface-sunken);
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+  }
+</style>

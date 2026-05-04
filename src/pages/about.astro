@@ -1,38 +1,76 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../lib/site";
 ---
 
-<BaseLayout title="关于 | Traveler2333">
+<BaseLayout
+  title="关于"
+  description="一个正在学习强化学习、Agent、Python 的人，也写一些不那么严肃的随笔。"
+>
   <section class="section hero">
     <div>
       <p class="eyebrow">About</p>
-      <h1>Traveler2333</h1>
+      <h1 class="hero-display">{site.title}</h1>
       <p class="lead">
-        一个正在学习 Python、深度学习和强化学习的人。这个站点用来保存实验过程、阅读记录和那些暂时还不成熟但值得继续追问的想法。
+        我是一个一边写代码，一边想些没用的事的人。这个站点用来同时记录两件事：
+        <strong>慢一点的</strong>思考，和<strong>具体一点的</strong>实验。
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="https://github.com/traveler2333">GitHub</a>
-        <a class="button" href="/blog/">文章</a>
+        <a class="button primary" href={site.author.github} rel="noopener">GitHub</a>
+        <a class="button" href="/essays/">读读随笔</a>
+        <a class="button ghost" href="/notes/">看看笔记</a>
       </div>
     </div>
   </section>
 
   <section class="section band">
-    <div class="project-grid">
-      <div class="project-card">
-        <div>
-          <span class="post-meta">Focus</span>
-          <h3>现在关注什么</h3>
-          <p>强化学习算法、PyTorch 训练流程、实验可视化，以及怎样把学习过程写清楚。</p>
-        </div>
+    <div class="card-grid">
+      <div class="post-card" data-section="essays">
+        <div class="post-meta"><span>关于随笔</span></div>
+        <h3>慢一点的想法</h3>
+        <p class="post-excerpt">
+          关于人生意义、内卷、阅读、生活方式的零散记录。它们不会都对，但都是真心想过的。
+          欢迎在评论里吵两句。
+        </p>
       </div>
-      <div class="project-card">
-        <div>
-          <span class="post-meta">Style</span>
-          <h3>我希望文章是什么样</h3>
-          <p>不是完美教程，而是带着上下文的记录：问题、尝试、结果、复盘。</p>
-        </div>
+      <div class="post-card" data-section="notes">
+        <div class="post-meta"><span>关于笔记</span></div>
+        <h3>具体一点的实验</h3>
+        <p class="post-excerpt">
+          强化学习算法、Agent 框架、PyTorch 训练流程、Python 工程化。带踩坑过程，
+          不只贴最终曲线。
+        </p>
+      </div>
+      <div class="post-card">
+        <div class="post-meta"><span>互动</span></div>
+        <h3>留言、订阅、引用</h3>
+        <p class="post-excerpt">
+          每篇文末的评论用 GitHub 账号即可发言。整站可订阅
+          <a href="/rss.xml">RSS</a>。
+          按 <kbd>⌘ K</kbd> / <kbd>Ctrl K</kbd> 打开站内搜索。
+        </p>
+      </div>
+      <div class="post-card">
+        <div class="post-meta"><span>原则</span></div>
+        <h3>怎样选题</h3>
+        <p class="post-excerpt">
+          只写那些"如果不记下来就会忘"的事；不追热点；允许写到一半的草稿存在。
+          每一篇至少一个具体的"上下文"。
+        </p>
       </div>
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    background: var(--surface-sunken);
+    font-family: var(--font-mono);
+    font-size: 0.78em;
+  }
+</style>

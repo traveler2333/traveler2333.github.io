@@ -1,0 +1,29 @@
+---
+import { site } from "../lib/site";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>© {year} {site.title}</span>
+    <span>
+      用 <a href="https://astro.build" rel="noopener">Astro</a> 搭建，部署于 GitHub Pages
+    </span>
+    <span class="footer-links">
+      {site.social.map((item, i) => (
+        <>
+          {i > 0 && <span aria-hidden="true">·</span>}
+          <a href={item.href}>{item.label}</a>
+        </>
+      ))}
+    </span>
+  </div>
+</footer>
+
+<style>
+  .footer-links {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+</style>

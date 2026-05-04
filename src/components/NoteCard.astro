@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TagChip from "./TagChip.astro";
+import CategoryBadge from "./CategoryBadge.astro";
+import { entryHref, formatDate, getReadingTime } from "../lib/posts";
+
+interface Props {
+  post: CollectionEntry<"notes">;
+}
+const { post } = Astro.props;
+const { minutes } = getReadingTime(post.body);
+const href = entryHref("note", post.id);
+---
+
+<a class="post-card note" href={href} data-section="notes">
+  <div class="post-meta" style="display:flex; align-items:center; gap:8px;">
+    <CategoryBadge category={post.data.category} />
+    <span class="dot"></span>
+    <span>{formatDate(post.data.date)}</span>
+    <span class="dot"></span>
+    <span>{minutes} 分钟</span>
+    {post.data.series && (
+      <>
+        <span class="dot"></span>
+        <span>系列：{post.data.series}</span>
+      </>
+    )}
+  </div>
+  <h3>{post.data.title}</h3>
+  <p class="post-excerpt">{post.data.description}</p>
+  <div class="card-foot">
+    <div class="tag-list">
+      {post.data.tags.slice(0, 3).map((tag) => <TagChip tag={tag} asLink={false} />)}
+    </div>
+    <span class="read-arrow" aria-hidden="true">→</span>
+  </div>
+</a>
+
+<style>
+  .read-arrow {
+    color: var(--accent-strong);
+    font-weight: 700;
+    transition: transform var(--duration-fast) var(--easing);
+  }
+  .post-card:hover .read-arrow {
+    transform: translateX(3px);
+  }
+</style>

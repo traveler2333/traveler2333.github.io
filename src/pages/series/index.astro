@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getAllPosts, getSeries, seriesHref } from "../../lib/posts";
+
+const all = await getAllPosts();
+const series = Array.from(getSeries(all).entries()).sort((a, b) =>
+  a[0].localeCompare(b[0])
+);
+---
+
+<BaseLayout title="系列" description="把相关的文章串成一条线。">
+  <section class="section hero">
+    <div>
+      <p class="eyebrow">Series · 系列</p>
+      <h1 class="hero-display">把它们<em>串起来</em></h1>
+      <p class="lead">
+        有些主题不是一篇能写完的——例如 PPO 实验需要十次复盘才能稳定，
+        关于内卷的思考也会随时间被自己反复修正。
+      </p>
+    </div>
+  </section>
+
+  <section class="section band">
+    {series.length > 0 ? (
+      <div class="card-grid">
+        {series.map(([name, posts]) => (
+          <a class="post-card" href={seriesHref(name)}>
+            <div class="post-meta">
+              <span>系列</span>
+              <span class="dot"></span>
+              <span>{posts.length} 篇</span>
+            </div>
+            <h3>{name}</h3>
+            <p class="post-excerpt">{posts[0].data.description}</p>
+            <div class="card-foot">
+              <span style="color:var(--accent-strong); font-weight:700;">查看 →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">还没有系列。给两篇及以上文章设置同样的 <code>series</code> 字段即可创建。</div>
+    )}
+  </section>
+</BaseLayout>
