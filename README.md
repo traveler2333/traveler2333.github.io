@@ -10,6 +10,7 @@
 - 标签页 + 标签云
 - 站内搜索（Pagefind），任意页面 ⌘K / Ctrl+K 唤起
 - 评论（Giscus，基于 GitHub Discussions），主题自动跟随站点
+- 可视化管理后台（Sveltia CMS）部署在 `/admin/`，浏览器即可写文章并一键发布
 - 文章中可写公式（KaTeX）、Mermaid 图、双主题代码高亮
 - RSS + Sitemap
 
@@ -117,6 +118,53 @@ flowchart LR
   A --> B --> C
 ```
 ````
+
+## 可视化管理界面 / CMS
+
+不想用编辑器写 Markdown？打开
+<https://traveler2333.github.io/admin/> 直接在浏览器里写。
+
+后台用的是 [Sveltia CMS](https://github.com/sveltia/sveltia-cms)——
+一个开源的、纯客户端的 Git-based CMS。它通过 GitHub API 直接读写本仓库，
+不需要任何后端服务器。功能：
+
+- 「随笔」「笔记」两个 Collection，带筛选、搜索、按分类分组
+- 全字段表单：标题 / 摘要 / 日期 / 标签 / 分类（笔记）/ 系列 / 系列顺序 /
+  心境（随笔）/ 封面图 / 是否草稿
+- Markdown / 富文本（WYSIWYG）双视图编辑器，右侧实时预览
+- 图片拖拽上传，自动落到 `public/uploads/`
+- 点 Publish 直接 commit 到 `main`，GitHub Actions 几分钟后部署上线
+
+### 第一次登录：生成一个 GitHub Personal Access Token
+
+CMS 完全在浏览器里运行，需要一个有写权限的 PAT 来代你提交。**强烈推荐
+fine-grained token**，权限可以精确到本仓库：
+
+1. 访问 <https://github.com/settings/personal-access-tokens/new>
+2. **Token name**：`traveler2333-cms`（随便起）
+3. **Expiration**：90 天或更长（到期后再生成一个就好）
+4. **Repository access** → Only select repositories →
+   选 `traveler2333/traveler2333.github.io`
+5. **Permissions** → Repository permissions：
+   - `Contents` → **Read and write**
+   - `Metadata` → Read-only（自动勾选，无需修改）
+   - 其他全部保持 No access
+6. 点 Generate token，把生成的字符串（`github_pat_…`）复制下来
+
+打开 <https://traveler2333.github.io/admin/>，CMS 会弹出登录界面，
+选 **Use Personal Access Token**，粘贴刚才生成的值。Token 只存在你
+本地浏览器的 `localStorage` 里，不会上传到任何服务器。
+
+### 日常发布流程
+
+1. 在 CMS 点 New Essay 或 New Note
+2. 填表 + 写正文（支持图片粘贴）
+3. 右上角点 **Save** 保留为草稿，或 **Publish** 直接发布
+4. Publish = 一次 commit 推到 `main` 分支，GitHub Actions 自动构建
+5. 大约 1–3 分钟后，新文章出现在 <https://traveler2333.github.io>
+
+> **`draft: true`** 的文章本地 `npm run dev` 时可见，但生产构建会跳过——
+> 适合在 CMS 里反复修改、确认满意了再 Publish。
 
 ## 启用评论（Giscus）
 

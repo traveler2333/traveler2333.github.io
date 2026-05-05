@@ -1,0 +1,149 @@
+backend:
+  name: github
+  repo: traveler2333/traveler2333.github.io
+  branch: main
+  auth_type: pat
+
+publish_mode: simple
+
+site_url: https://traveler2333.github.io
+display_url: https://traveler2333.github.io
+locale: zh_Hans
+
+media_folder: public/uploads
+public_folder: /uploads
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+editor:
+  preview: true
+
+collections:
+  - name: essays
+    label: 随笔
+    label_singular: 随笔
+    description: 关于人生意义、内卷、阅读、生活方式等的思考。
+    folder: src/content/essays
+    create: true
+    delete: true
+    extension: md
+    format: yaml-frontmatter
+    slug: "{{slug}}"
+    sortable_fields: ["date", "title"]
+    summary: "{{title}}{{#if mood}} · {{mood}}{{/if}} · {{date | date('YYYY-MM-DD')}}"
+    view_filters:
+      - label: 仅显示草稿
+        field: draft
+        pattern: true
+      - label: 仅显示已发布
+        field: draft
+        pattern: false
+    fields:
+      - { label: 标题, name: title, widget: string }
+      - { label: 摘要, name: description, widget: text, hint: 用一两句话概括这篇文章。 }
+      - {
+          label: 发布日期,
+          name: date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false,
+          default: ""
+        }
+      - {
+          label: 更新日期,
+          name: updated,
+          widget: datetime,
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false
+        }
+      - { label: 标签, name: tags, widget: list, default: ["随笔"], required: false, allow_add: true }
+      - { label: 系列, name: series, widget: string, required: false, hint: "属于哪个系列（可选），相同系列的文章会被串起来。" }
+      - {
+          label: 系列顺序,
+          name: seriesOrder,
+          widget: number,
+          required: false,
+          value_type: int,
+          min: 1,
+          step: 1,
+          hint: "在系列里的位置。从 1 开始。"
+        }
+      - { label: 心境, name: mood, widget: string, required: false, hint: "比如：夜里 / 清晨 / 雨天 / 起点。" }
+      - { label: 封面图, name: cover, widget: image, required: false, allow_multiple: false }
+      - { label: 草稿, name: draft, widget: boolean, default: false, hint: "勾选后只在本地预览，不会出现在公开页面。" }
+      - { label: 正文, name: body, widget: markdown }
+
+  - name: notes
+    label: 笔记
+    label_singular: 笔记
+    description: 关于强化学习、Agent、Python 工程化的实验记录。
+    folder: src/content/notes
+    create: true
+    delete: true
+    extension: md
+    format: yaml-frontmatter
+    slug: "{{slug}}"
+    sortable_fields: ["date", "title", "category"]
+    view_groups:
+      - { label: 按分类, field: category }
+    summary: "{{title}} · {{category}} · {{date | date('YYYY-MM-DD')}}"
+    view_filters:
+      - { label: 强化学习 (RL), field: category, pattern: RL }
+      - { label: Agent, field: category, pattern: Agent }
+      - { label: Python, field: category, pattern: Python }
+      - { label: 深度学习 (DL), field: category, pattern: DL }
+      - { label: 工具链, field: category, pattern: Tooling }
+      - { label: 其他, field: category, pattern: Other }
+      - { label: 仅显示草稿, field: draft, pattern: true }
+      - { label: 仅显示已发布, field: draft, pattern: false }
+    fields:
+      - { label: 标题, name: title, widget: string }
+      - { label: 摘要, name: description, widget: text, hint: 用一两句话概括这篇笔记要解决的问题。 }
+      - {
+          label: 发布日期,
+          name: date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false
+        }
+      - {
+          label: 更新日期,
+          name: updated,
+          widget: datetime,
+          required: false,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: false
+        }
+      - label: 分类
+        name: category
+        widget: select
+        default: Other
+        options:
+          - { label: "强化学习 (RL)", value: RL }
+          - { label: "Agent", value: Agent }
+          - { label: "Python", value: Python }
+          - { label: "深度学习 (DL)", value: DL }
+          - { label: "工具链 (Tooling)", value: Tooling }
+          - { label: "其他", value: Other }
+      - { label: 标签, name: tags, widget: list, default: ["学习记录"], required: false, allow_add: true }
+      - { label: 系列, name: series, widget: string, required: false, hint: "属于哪个系列（可选）。" }
+      - {
+          label: 系列顺序,
+          name: seriesOrder,
+          widget: number,
+          required: false,
+          value_type: int,
+          min: 1,
+          step: 1
+        }
+      - { label: 封面图, name: cover, widget: image, required: false, allow_multiple: false }
+      - { label: 草稿, name: draft, widget: boolean, default: false }
+      - { label: 正文, name: body, widget: markdown }

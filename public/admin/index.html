@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>内容管理 · Traveler2333</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%8D%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0e1013;
+        color: #ebe7df;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", system-ui, sans-serif;
+      }
+      .boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        gap: 16px;
+        text-align: center;
+      }
+      .boot h1 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.05rem;
+        letter-spacing: 0.04em;
+        color: #ebe7df;
+      }
+      .boot p {
+        margin: 0;
+        font-size: 0.86rem;
+        color: #99928a;
+      }
+      .boot .spin {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid #2a2f36;
+        border-top-color: #69bcdb;
+        animation: spin 0.9s linear infinite;
+        margin: 0 auto 6px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="boot" id="boot">
+      <div>
+        <div class="spin"></div>
+        <h1>正在加载内容管理界面…</h1>
+        <p>第一次进来需要粘贴一个 GitHub Personal Access Token。</p>
+      </div>
+    </div>
+
+    <!-- Sveltia CMS — Git-based, fully client-side. Loads from jsDelivr. -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script>
+      // Hide the boot screen once Sveltia mounts (Sveltia injects its own root).
+      const observer = new MutationObserver(() => {
+        if (
+          document.querySelector("sveltia-cms-app") ||
+          document.querySelector("[id^='nc-root']")
+        ) {
+          const boot = document.getElementById("boot");
+          if (boot) boot.style.display = "none";
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      // Fallback: if Sveltia didn't load in 8s, surface a hint.
+      setTimeout(() => {
+        const boot = document.getElementById("boot");
+        if (boot && boot.style.display !== "none") {
+          boot.innerHTML =
+            '<div><h1>加载失败</h1><p style="margin-top:8px;">无法加载 Sveltia CMS。请检查网络是否能访问 cdn.jsdelivr.net，或刷新页面重试。</p></div>';
+        }
+      }, 8000);
+    </script>
+  </body>
+</html>
