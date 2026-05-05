@@ -75,7 +75,7 @@ collections:
           hint: "在系列里的位置。从 1 开始。"
         }
       - { label: 心境, name: mood, widget: string, required: false, hint: "比如：夜里 / 清晨 / 雨天 / 起点。" }
-      - { label: 封面图, name: cover, widget: image, required: false, allow_multiple: false }
+      - { label: 封面图, name: cover, widget: image, required: false }
       - { label: 草稿, name: draft, widget: boolean, default: false, hint: "勾选后只在本地预览，不会出现在公开页面。" }
       - { label: 正文, name: body, widget: markdown }
 
@@ -144,6 +144,6 @@ collections:
           min: 1,
           step: 1
         }
-      - { label: 封面图, name: cover, widget: image, required: false, allow_multiple: false }
+      - { label: 封面图, name: cover, widget: image, required: false }
       - { label: 草稿, name: draft, widget: boolean, default: false }
       - { label: 正文, name: body, widget: markdown }
